@@ -61,7 +61,7 @@ public class CommunicationThread extends Thread {
                             	
                             	JSONObject content = new JSONObject(pageSourceCode);
                                 
-                                String time = content.getString("time");
+                                String time = content.getString("dateString");
                                 
                                 Date utcDate = new Date(time);
                                 
