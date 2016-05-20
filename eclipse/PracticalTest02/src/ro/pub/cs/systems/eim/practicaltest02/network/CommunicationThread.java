@@ -68,18 +68,8 @@ public class CommunicationThread extends Thread {
                             	int hour = utcDate.getHours();
                             	int minute = utcDate.getMinutes();
                             	
-//                                Document document = Jsoup.parse(pageSourceCode);
-//                                Element element = document.child(0);
-//                                Elements scripts = element.getElementsByTag(Constants.SCRIPT_TAG);
-//                                for (Element script : scripts) {
-//
-//                                    String scriptData = script.data();
-//
-//                                        int position = scriptData.indexOf(Constants.SEARCH_KEY) + Constants.SEARCH_KEY.length();
-//                                        scriptData = scriptData.substring(position);
-//
-////            
-                                   
+                    System.out.println(hour);
+                    Log.e("cheeeck", hour + " ");
 //                                        
                                         String[] al = alarm.split(",");
                                         
