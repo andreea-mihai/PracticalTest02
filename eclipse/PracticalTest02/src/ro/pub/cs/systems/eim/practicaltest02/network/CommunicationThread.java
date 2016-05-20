@@ -1,12 +1,15 @@
 package ro.pub.cs.systems.eim.practicaltest02.network;
 
-import android.util.Log;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.HashMap;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -18,17 +21,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
 import ro.pub.cs.systems.eim.practicaltest02.general.Utilities;
 import ro.pub.cs.systems.eim.practicaltest02.model.WeatherForecastInformation;
+import android.util.Log;
 
 public class CommunicationThread extends Thread {
 
@@ -48,23 +44,24 @@ public class CommunicationThread extends Thread {
                 PrintWriter printWriter = Utilities.getWriter(socket);
                 if (bufferedReader != null && printWriter != null) {
                     Log.i(Constants.TAG, "[COMMUNICATION THREAD] Waiting for parameters from client (city / information type)!");
-                    String city = bufferedReader.readLine();
-                    String informationType = bufferedReader.readLine();
+                    String alarm = bufferedReader.readLine();
                     HashMap<String, WeatherForecastInformation> data = serverThread.getData();
                     WeatherForecastInformation weatherForecastInformation = null;
-                    if (city != null && !city.isEmpty() && informationType != null && !informationType.isEmpty()) {
-                        if (data.containsKey(city)) {
+                    if (alarm != null && !alarm.isEmpty()) {
+             
+                        if (data.containsKey(alarm)) {
                             Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the cache...");
-                            weatherForecastInformation = data.get(city);
+                            weatherForecastInformation = data.get(alarm);
                         } else {
                             Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the webservice...");
                             HttpClient httpClient = new DefaultHttpClient();
-                            HttpPost httpPost = new HttpPost(Constants.WEB_SERVICE_ADDRESS);
-                            List<NameValuePair> params = new ArrayList<NameValuePair>();
-                            params.add(new BasicNameValuePair(Constants.QUERY_ATTRIBUTE, city));
-                            UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
-                            httpPost.setEntity(urlEncodedFormEntity);
+                            
+      
+                           
+                            
+                            HttpGet httpPost = new HttpGet(Constants.WEB_SERVICE_ADDRESS);
                             ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                            
                             String pageSourceCode = httpClient.execute(httpPost, responseHandler);
                             if (pageSourceCode != null) {
                                 Document document = Jsoup.parse(pageSourceCode);
@@ -84,18 +81,15 @@ public class CommunicationThread extends Thread {
                                         String temperature = currentObservation.getString(Constants.TEMPERATURE);
                                         String windSpeed = currentObservation.getString(Constants.WIND_SPEED);
                                         String condition = currentObservation.getString(Constants.CONDITION);
-                                        String pressure = currentObservation.getString(Constants.PRESSURE);
-                                        String humidity = currentObservation.getString(Constants.HUMIDITY);
+                                        
 
-                                        weatherForecastInformation = new WeatherForecastInformation(
-                                                temperature,
-                                                windSpeed,
-                                                condition,
-                                                pressure,
-                                                humidity);
-
-                                        serverThread.setData(city, weatherForecastInformation);
-                                        break;
+//                                        weatherForecastInformation = new WeatherForecastInformation(
+//                                                hour,
+//                                                minute,cmd
+//                          );
+//
+//                                        serverThread.setData(city, weatherForecastInformation);
+//                                        break;
                                     }
                                 }
                             } else {
@@ -103,28 +97,28 @@ public class CommunicationThread extends Thread {
                             }
                         }
 
-                        if (weatherForecastInformation != null) {
-                            String result = null;
-                            if (Constants.ALL.equals(informationType)) {
-                                result = weatherForecastInformation.toString();
-                            } else if (Constants.TEMPERATURE.equals(informationType)) {
-                                result = weatherForecastInformation.getTemperature();
-                            } else if (Constants.WIND_SPEED.equals(informationType)) {
-                                result = weatherForecastInformation.getWindSpeed();
-                            } else if (Constants.CONDITION.equals(informationType)) {
-                                result = weatherForecastInformation.getCondition();
-                            } else if (Constants.HUMIDITY.equals(informationType)) {
-                                result = weatherForecastInformation.getHumidity();
-                            } else if (Constants.PRESSURE.equals(informationType)) {
-                                result = weatherForecastInformation.getPressure();
-                            } else {
-                                result = "Wrong information type (all / temperature / wind_speed / condition / humidity / pressure)!";
-                            }
-                            printWriter.println(result);
-                            printWriter.flush();
-                        } else {
-                            Log.e(Constants.TAG, "[COMMUNICATION THREAD] Weather Forecast information is null!");
-                        }
+//                        if (weatherForecastInformation != null) {
+//                            String result = null;
+//                            if (Constants.ALL.equals(informationType)) {
+//                                result = weatherForecastInformation.toString();
+//                            } else if (Constants.TEMPERATURE.equals(informationType)) {
+//                                result = weatherForecastInformation.getTemperature();
+//                            } else if (Constants.WIND_SPEED.equals(informationType)) {
+//                                result = weatherForecastInformation.getWindSpeed();
+//                            } else if (Constants.CONDITION.equals(informationType)) {
+//                                result = weatherForecastInformation.getCondition();
+//                            } else if (Constants.HUMIDITY.equals(informationType)) {
+//                                result = weatherForecastInformation.getHumidity();
+//                            } else if (Constants.PRESSURE.equals(informationType)) {
+//                                result = weatherForecastInformation.getPressure();
+//                            } else {
+//                                result = "Wrong information type (all / temperature / wind_speed / condition / humidity / pressure)!";
+//                            }
+//                            printWriter.println(result);
+//                            printWriter.flush();
+//                        } else {
+//                            Log.e(Constants.TAG, "[COMMUNICATION THREAD] Weather Forecast information is null!");
+//                        }
 
                     } else {
                         Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error receiving parameters from client (city / information type)!");

@@ -107,17 +107,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="5"
-            android:hint="@string/city"
+            android:hint="alarm"
             android:layout_row="0"
             android:layout_column="0" />
-        
-        <Spinner
-            android:id="@+id/information_type_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/information_types"
-            android:layout_row="1"
-            android:layout_column="0" />
+       
         
         <Button
             android:id="@+id/get_weather_forecast_button"

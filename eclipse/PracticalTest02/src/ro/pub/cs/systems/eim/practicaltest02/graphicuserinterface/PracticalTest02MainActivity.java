@@ -1,5 +1,9 @@
 package ro.pub.cs.systems.eim.practicaltest02.graphicuserinterface;
 
+import ro.pub.cs.systems.eim.practicaltest02.R;
+import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
+import ro.pub.cs.systems.eim.practicaltest02.network.ClientThread;
+import ro.pub.cs.systems.eim.practicaltest02.network.ServerThread;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +13,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import ro.pub.cs.systems.eim.practicaltest02.R;
-import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
-import ro.pub.cs.systems.eim.practicaltest02.network.ClientThread;
-import ro.pub.cs.systems.eim.practicaltest02.network.ServerThread;
 
 public class PracticalTest02MainActivity extends Activity {
 
@@ -79,16 +79,9 @@ public class PracticalTest02MainActivity extends Activity {
             }
 
             String city = cityEditText.getText().toString();
-            String informationType = informationTypeSpinner.getSelectedItem().toString();
-            if (city == null || city.isEmpty() ||
-                    informationType == null || informationType.isEmpty()) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Parameters from client (city / information type) should be filled!",
-                        Toast.LENGTH_SHORT
-                ).show();
-                return;
-            }
+
+            
+            
 
             weatherForecastTextView.setText(Constants.EMPTY_STRING);
 
@@ -96,7 +89,6 @@ public class PracticalTest02MainActivity extends Activity {
                     clientAddress,
                     Integer.parseInt(clientPort),
                     city,
-                    informationType,
                     weatherForecastTextView);
             clientThread.start();
         }
@@ -114,7 +106,6 @@ public class PracticalTest02MainActivity extends Activity {
         clientAddressEditText = (EditText)findViewById(R.id.client_address_edit_text);
         clientPortEditText = (EditText)findViewById(R.id.client_port_edit_text);
         cityEditText = (EditText)findViewById(R.id.city_edit_text);
-        informationTypeSpinner = (Spinner)findViewById(R.id.information_type_spinner);
         getWeatherForecastButton = (Button)findViewById(R.id.get_weather_forecast_button);
         getWeatherForecastButton.setOnClickListener(getWeatherForecastButtonClickListener);
         weatherForecastTextView = (TextView)findViewById(R.id.weather_forecast_text_view);

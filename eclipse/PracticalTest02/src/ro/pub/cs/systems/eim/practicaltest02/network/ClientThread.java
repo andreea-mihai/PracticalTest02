@@ -16,7 +16,6 @@ public class ClientThread extends Thread {
     private String address;
     private int port;
     private String city;
-    private String informationType;
     private TextView weatherForecastTextView;
 
     private Socket socket;
@@ -25,12 +24,11 @@ public class ClientThread extends Thread {
             String address,
             int port,
             String city,
-            String informationType,
+
             TextView weatherForecastTextView) {
         this.address = address;
         this.port = port;
         this.city = city;
-        this.informationType = informationType;
         this.weatherForecastTextView = weatherForecastTextView;
     }
 
@@ -47,7 +45,6 @@ public class ClientThread extends Thread {
             if (bufferedReader != null && printWriter != null) {
                 printWriter.println(city);
                 printWriter.flush();
-                printWriter.println(informationType);
                 printWriter.flush();
                 String weatherInformation;
                 while ((weatherInformation = bufferedReader.readLine()) != null) {
