@@ -4,22 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
 import ro.pub.cs.systems.eim.practicaltest02.general.Utilities;
@@ -49,76 +43,57 @@ public class CommunicationThread extends Thread {
                     WeatherForecastInformation weatherForecastInformation = null;
                     if (alarm != null && !alarm.isEmpty()) {
              
-                        if (data.containsKey(alarm)) {
+                        if (data.containsKey(socket.getInetAddress())) {
                             Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the cache...");
                             weatherForecastInformation = data.get(alarm);
                         } else {
                             Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the webservice...");
                             HttpClient httpClient = new DefaultHttpClient();
                             
-      
-                           
+                            
                             
                             HttpGet httpPost = new HttpGet(Constants.WEB_SERVICE_ADDRESS);
                             ResponseHandler<String> responseHandler = new BasicResponseHandler();
                             
                             String pageSourceCode = httpClient.execute(httpPost, responseHandler);
+                            
                             if (pageSourceCode != null) {
-                                Document document = Jsoup.parse(pageSourceCode);
-                                Element element = document.child(0);
-                                Elements scripts = element.getElementsByTag(Constants.SCRIPT_TAG);
-                                for (Element script : scripts) {
-
-                                    String scriptData = script.data();
-
-                                    if (scriptData.contains(Constants.SEARCH_KEY)) {
-                                        int position = scriptData.indexOf(Constants.SEARCH_KEY) + Constants.SEARCH_KEY.length();
-                                        scriptData = scriptData.substring(position);
-
-                                        JSONObject content = new JSONObject(scriptData);
-
-                                        JSONObject currentObservation = content.getJSONObject(Constants.CURRENT_OBSERVATION);
-                                        String temperature = currentObservation.getString(Constants.TEMPERATURE);
-                                        String windSpeed = currentObservation.getString(Constants.WIND_SPEED);
-                                        String condition = currentObservation.getString(Constants.CONDITION);
-                                        
-
-//                                        weatherForecastInformation = new WeatherForecastInformation(
-//                                                hour,
-//                                                minute,cmd
-//                          );
+                            	
+                            	JSONObject content = new JSONObject(pageSourceCode);
+                                
+                                String time = content.getString("time");
+                                
+                                Date utcDate = new Date(time);
+                                
+                            	int hour = utcDate.getHours();
+                            	int minute = utcDate.getMinutes();
+                            	
+//                                Document document = Jsoup.parse(pageSourceCode);
+//                                Element element = document.child(0);
+//                                Elements scripts = element.getElementsByTag(Constants.SCRIPT_TAG);
+//                                for (Element script : scripts) {
 //
-//                                        serverThread.setData(city, weatherForecastInformation);
-//                                        break;
+//                                    String scriptData = script.data();
+//
+//                                        int position = scriptData.indexOf(Constants.SEARCH_KEY) + Constants.SEARCH_KEY.length();
+//                                        scriptData = scriptData.substring(position);
+//
+////            
+                                   
+//                                        
+                                        String[] al = alarm.split(",");
+                                        
+                                        if (Integer.parseInt(al[1]) >= hour && Integer.parseInt(al[2]) >= minute)
+                                        weatherForecastInformation = new WeatherForecastInformation(
+                                               alarm );
+//
+                                        serverThread.setData(socket.getInetAddress().toString(), weatherForecastInformation);
+                                      
                                     }
-                                }
-                            } else {
-                                Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error getting the information from the webservice!");
-                            }
+//                                }
+
                         }
 
-//                        if (weatherForecastInformation != null) {
-//                            String result = null;
-//                            if (Constants.ALL.equals(informationType)) {
-//                                result = weatherForecastInformation.toString();
-//                            } else if (Constants.TEMPERATURE.equals(informationType)) {
-//                                result = weatherForecastInformation.getTemperature();
-//                            } else if (Constants.WIND_SPEED.equals(informationType)) {
-//                                result = weatherForecastInformation.getWindSpeed();
-//                            } else if (Constants.CONDITION.equals(informationType)) {
-//                                result = weatherForecastInformation.getCondition();
-//                            } else if (Constants.HUMIDITY.equals(informationType)) {
-//                                result = weatherForecastInformation.getHumidity();
-//                            } else if (Constants.PRESSURE.equals(informationType)) {
-//                                result = weatherForecastInformation.getPressure();
-//                            } else {
-//                                result = "Wrong information type (all / temperature / wind_speed / condition / humidity / pressure)!";
-//                            }
-//                            printWriter.println(result);
-//                            printWriter.flush();
-//                        } else {
-//                            Log.e(Constants.TAG, "[COMMUNICATION THREAD] Weather Forecast information is null!");
-//                        }
 
                     } else {
                         Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error receiving parameters from client (city / information type)!");

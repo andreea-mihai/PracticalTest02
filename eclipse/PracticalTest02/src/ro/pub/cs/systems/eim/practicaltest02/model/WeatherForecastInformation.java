@@ -7,7 +7,8 @@ public class WeatherForecastInformation {
     private String hour;
     private String minute;
     private String cmd;
-    private String port;
+    
+    private String cmdall;
 
     public WeatherForecastInformation() {
         this.hour = null;
@@ -23,8 +24,13 @@ public class WeatherForecastInformation {
         this.hour = temperature;
         this.minute = windSpeed;
         this.cmd = cmd;
-        this.port = port;
+        this.cmdall = cmdall;
     }
+    
+    public WeatherForecastInformation(
+           String cmdall
+  ) {
+    	  this.cmdall = cmdall;}
 
     public void setHour(String hour) {
         this.hour = hour;
@@ -51,14 +57,7 @@ public class WeatherForecastInformation {
         return cmd;
     }
     
-    public void setPort(String port) {
-        this.port= port;
-    }
 
-    public String getPort() {
-        return port;
-    }
-    
 
 //    @Override
 //    public String toString() {
